@@ -1,0 +1,54 @@
+spring:
+  profiles:
+    active: dev
+
+
+---
+server:
+  port: 8081
+spring:
+  profiles: dev
+  datasource:
+    username: root
+    password: 123456
+    url: jdbc:mysql://192.168.79.131:3306/jwtlogin
+    driver-class-name: org.gjt.mm.mysql.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    initialSize: 5
+    minIdle: 5
+    maxActive: 20
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    #  配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+    filters: stat
+    maxPoolPreparedStatementPerConnectionSize: 20
+    useGlobalDataSourceStat: true
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
+
+# springboot1 jedis缓存
+  redis:
+    database: 0 #系统服务使用0号
+    host: 192.168.79.131
+    password: 123456
+    port: 6379
+    pool:
+      max-active: 10
+      max-idle: 5
+      min-idle: 3
+    timeout: 60000
+  cache:
+    type: redis
+
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+jwt:
+  signKey: hackcity
+  timeout: 30

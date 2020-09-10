@@ -1,0 +1,76 @@
+group = 'cn.ne'
+version = '1.0'
+apply plugin: 'java' // 编译为jar
+sourceCompatibility = 1.8
+
+
+buildscript {
+    // 统一构建版本
+    ext {
+        set('springBootVersion', "1.5.22.RELEASE")  // springboot 1 jedis缓存
+//        set('springBootVersion', "2.3.1.RELEASE") // springboot 2 lettuce缓存
+    }
+    // maven仓库源
+    repositories {
+        mavenLocal()    // 本地maven缓存
+        maven { url('https://maven.aliyun.com/nexus/content/groups/public/') }      // 阿里云
+        mavenCentral()  // maven官方
+    }
+    // 统一打包管理
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+allprojects {
+    // maven仓库源
+    repositories {
+        mavenLocal()    // 本地maven缓存
+        maven { url('https://maven.aliyun.com/nexus/content/groups/public/') }      // 阿里云
+        mavenCentral()  // maven官方
+    }
+
+    //指定编码格式
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+    }
+}
+
+// 子工程依赖
+subprojects {
+    apply plugin: 'java'                            // 编译为jar
+    apply plugin: 'idea'                            // 使用idea开发工具插件
+    apply plugin: 'org.springframework.boot'        // 打包为springboot工程
+    apply plugin: 'io.spring.dependency-management' // 使用spring依赖管理器
+
+    configurations {
+        all*.exclude module: 'spring-boot-starter-logging'
+        all*.exclude module: 'logback-classic'
+    }
+
+    def env = System.getProperty("env") ?: "dev"
+    sourceSets {
+        main {
+            java { srcDirs = ["src/main/java"] }
+            resources { srcDirs = ["src/main/resources", "src/main/profiles/$env"] }
+        }
+        test {
+            java { srcDirs = ["src/test/java"] }
+        }
+    }
+
+    // 子工程所需依赖
+    dependencies {
+        compile('org.springframework.boot:spring-boot-starter')
+        compile('org.springframework.boot:spring-boot-starter-web')
+        testImplementation('org.springframework.boot:spring-boot-starter-test') {
+            exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+        }
+        compile('org.springframework.boot:spring-boot-starter-log4j2')
+    }
+
+
+    jar { manifest.attributes provider: 'gradle' }
+
+//    test { useJUnitPlatform() }
+}
