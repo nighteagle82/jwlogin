@@ -29,6 +29,7 @@ public class NewsServiceImpl implements INewsService {
         return this.newsDao.findById(nid);
     }
 
+    @Cacheable(unless = "#result==null")
     @Override
     public PageInfo<News> findAll(Integer currentPage, Integer pageSize) {
         PageHelper.startPage(currentPage, pageSize);
