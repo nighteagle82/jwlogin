@@ -32,8 +32,7 @@ public class NewsServiceImpl implements INewsService {
     @Override
     public PageInfo<News> findAll(Integer currentPage, Integer pageSize) {
         PageHelper.startPage(currentPage, pageSize);
-        PageInfo<News> pageInfo = new PageInfo<>(this.newsDao.findAll());
-        return pageInfo;
+        return new PageInfo<>(this.newsDao.findAll());
 
     }
 
